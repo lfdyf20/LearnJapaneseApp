@@ -60,7 +60,7 @@ class LearnJap(tk.Frame):
 		# set the table for characters
 		charTable = Treeview(tableFrame)
 		charTable.pack(fill=BOTH, expand=1, padx=padx_table, pady=pady_table)
-		columnNames = ("片假名中文","片假名","平假名中文","平假名")
+		columnNames = ("平假名中文","平假名","片假名中文","片假名")
 		charTable['columns'] = columnNames
 
 		charTable.heading('#0', text='pronounciation', anchor='center')
@@ -124,15 +124,98 @@ class LearnJap(tk.Frame):
 		self.randomReadWindow = tk.Toplevel()
 		self.randomReadWindow.title( "Check All Characters" )
 		self.randomReadWindow.protocol('WM_DELETE_WINDOW', self.closeRandomRead)
-		self.randomReadWindow.geometry('400x600+260+260')
+		self.randomReadWindow.geometry('600x600+300+300')
 
 		chooseModeFrame = tk.Frame(self.randomReadWindow, borderwidth=1, bg="red")
-		chooseModeFrame.pack(fill=BOTH, expand=True)
+		chooseModeFrame.pack(side=TOP, pady=20)
+
+		# choose mode check box
+		pianCheck, pingCheck = IntVar(), IntVar()
+		pianCheckButton = tk.Checkbutton(chooseModeFrame, text="平假名",
+						variable=pianCheck, onvalue=1, offvalue=0)
+		pingCheckButton = tk.Checkbutton(chooseModeFrame, text="片假名",
+						variable=pingCheck, onvalue=1, offvalue=0)
+		pianCheckButton.pack(side=LEFT, padx=5)
+		pingCheckButton.pack(side=LEFT, padx=5)
+
+		# display random choosen frame
+		displayFrame = tk.Frame(self.randomReadWindow, borderwidth=1, bg="blue")
+		displayFrame.pack(side=TOP, pady=20)
+
+		# submit button
+		generateButton = tk.Button(chooseModeFrame, text="Generate", 
+				command=lambda : self.dispRandomChars(displayFrame, [pianCheck.get(), pingCheck.get()]))
+		generateButton.pack(side=RIGHT, padx=10)
+
+
+
+	def dispRandomChars(self, frame, checkChoices):
+		if not any(checkChoices):
+			return
+
+		# clear the frame
+		for child in frame.winfo_children():
+			child.destroy()
+		
+		proList = self.proList
+		dataDic = self.dataDict
+		rowFramesList = []
+		charLabelsList = []
+		answerLabelsList = []
+		for _ in range(5):
+			# row frame to contain a charlabel and a answer label
+			rowFrame = tk.Frame(frame, borderwidth=1, bg="yellow")
+			rowFrame.pack(fill=X, expand=1)
+			rowFramesList.append(rowFrame)
+
+			# generate char label
+			charLabel = tk.Label(rowFrame, text="", borderwidth=2)
+			charLabel.pack(side=LEFT, padx=10)
+			charLabelsList.append(charLabel)
+
+			# generate answer label
+			answerLabel = tk.Label(rowFrame, text="", borderwidth=2)
+			answerLabel.pack(side=LEFT, padx=10)
+			answerLabelsList.append(answerLabel)
+
+			# get the random characters and config the text
+			chars, ans = self.randomGenerateChar(checkChoices)
+			charLabel.config(text=chars)
+			answerLabel.config(text=ans)
+
+
+
+	def randomGenerateChar(self, checkChoices, n=5):
+		print("checkChoices: ", checkChoices)
+		proList = self.proList
+		dataDic = self.dataDict
+
+		charsList = random.choices(list(dataDic.items()), k=5)
+		ans = [ c[0] for c in charsList ]
+
+		if all(checkChoices):
+			chars = [random.choice([c[1][1], c[1][3]]) for c in charsList]
+		elif checkChoices[0]==1:
+			chars = [ c[1][1] for c in charsList ]
+		elif checkChoices[1]==1:
+			chars = [ c[1][3] for c in charsList ]
+
+		return " ".join(chars), " ".join(ans)
+
+
+
+
+
+
+
 
 	def closeRandomRead(self):
 		self.master.deiconify()
 		self.randomReadWindow.destroy()
 
+
+
+# some other functions
 	def showMainMenu(self):
 		self.master.deiconify()
 
@@ -143,8 +226,8 @@ class LearnJap(tk.Frame):
 			data = f.read()
 			for line in data.split("\n"):
 				words = line.split()
-				pron, pin_ch, pin, pian_ch, pian = words
-				dic[pron] = [ pin_ch, pin, pian_ch, pian ]
+				pron, ping_ch, ping, pian_ch, pian = words
+				dic[pron] = [ ping_ch, ping, pian_ch, pian ]
 				proList.append(pron)
 		return dic, proList
 
