@@ -16,9 +16,8 @@ class LearnJap(tk.Frame):
 		self.createMainMenu()
 
 
-		
 
-
+# create a main menu
 	def createMainMenu(self):
 		label_pady = 5
 
@@ -39,17 +38,22 @@ class LearnJap(tk.Frame):
 		self.viewAllLabel.bind("<Button-1>", lambda _:self.viewAllCharacters())
 		self.randomReadLabel.bind("<Button-1>", lambda _:self.randomRead())
 
+
+# create windows to check all the characters
 	def viewAllCharacters(self):
 		padx_table = 2
 		pady_table = 2
 
+		# hide the main menu window
 		self.master.withdraw()
 
+		# create new window
 		self.viewAllCharWindow = tk.Toplevel()
 		self.viewAllCharWindow.title( "Check All Characters" )
 		self.viewAllCharWindow.protocol('WM_DELETE_WINDOW', self.closeViewAllCharacters)
 		self.viewAllCharWindow.geometry('400x600+260+260')
 
+		# create the frame to contain the table
 		tableFrame = tk.Frame(self.viewAllCharWindow, borderwidth=1, bg="red")
 		tableFrame.pack(fill=BOTH, expand=True)
 
@@ -87,17 +91,19 @@ class LearnJap(tk.Frame):
 		# search entry and button
 		searchEntry = tk.Entry(functionFrame)
 		searchEntry.pack(side=LEFT, fill=X, padx=5, pady=5, expand=1) 
+		searchEntry.bind('<Return>', lambda _:self.searchInCharTable(charTable, searchEntry))
 
 		searchButton = tk.Button(functionFrame, text="Search", 
 				command=lambda :self.searchInCharTable(charTable, searchEntry))
 		searchButton.pack(side=RIGHT, padx=5, pady=5)
 
 		
-
+		# add the go back button (use label and bind method)
 		goBackLabel.bind("<Button-1>", lambda _:self.showMainMenu())
 		goBackLabel.bind("<Button-1>", lambda _:self.viewAllCharWindow.destroy(), add='+')
 
 
+	# function for search the char in the table
 	def searchInCharTable(self, table, entry ):
 		s = entry.get()
 		if s in self.proList:
@@ -107,11 +113,13 @@ class LearnJap(tk.Frame):
 		print("end")
 
 
+	# function to fill the table with data
 	def insertDataToCharTable(self, table):
 		for pro in self.proList:
 			pin_ch, pin, pian, pian_ch = self.dataDict[pro]
 			table.insert('','end',iid=pro, text=pro, values=[pin_ch, pin, pian, pian_ch])
 
+	# function to close the current window
 	def closeViewAllCharacters(self):
 		self.master.deiconify()
 		self.viewAllCharWindow.destroy()
@@ -131,7 +139,7 @@ class LearnJap(tk.Frame):
 		self.randomReadWindow = tk.Toplevel()
 		self.randomReadWindow.title( "Check All Characters" )
 		self.randomReadWindow.protocol('WM_DELETE_WINDOW', self.closeRandomRead)
-		self.randomReadWindow.geometry('600x600+300+300')
+		# self.randomReadWindow.geometry('600x600+300+300')
 
 		# create menu check box frame
 		chooseModeFrame = tk.Frame(self.randomReadWindow, borderwidth=1, bg="red")
@@ -139,6 +147,8 @@ class LearnJap(tk.Frame):
 
 		# choose mode check box
 		pianCheck, pingCheck = IntVar(), IntVar()
+		pianCheck.set(1)
+		pingCheck.set(0)
 		pianCheckButton = tk.Checkbutton(chooseModeFrame, text="平假名",
 						variable=pianCheck, onvalue=1, offvalue=0)
 		pingCheckButton = tk.Checkbutton(chooseModeFrame, text="片假名",
@@ -173,16 +183,17 @@ class LearnJap(tk.Frame):
 
 
 		# show answer button
-		showAnsButton = tk.Button(self.randomReadWindow, text="Generate", 
+		showAnsButton = tk.Button(self.randomReadWindow, text="Show Answer", 
 				command=lambda : self.showAnswers(answerLabelsList, self.charsAns))
 		showAnsButton.pack(pady=10)
 
 
-
+	# function to show the answer
 	def showAnswers(self, labels, anses):
 		for label, ans in zip(labels, anses):
 			label.config(text=ans)
 
+	# function to put the chars in the label
 	def dispRandomChars(self, labels, answers, checkChoices):
 		if not any(checkChoices):
 			return
@@ -199,8 +210,9 @@ class LearnJap(tk.Frame):
 			ansLabel.config(text="")
 
 
+	# random generate the chars
 	def randomGenerateChar(self, checkChoices, n=5):
-		print("checkChoices: ", checkChoices)
+
 		proList = self.proList
 		dataDic = self.dataDict
 
@@ -216,17 +228,9 @@ class LearnJap(tk.Frame):
 
 		return " ".join(chars), " ".join(ans)
 
-
-
-
-
-
-
-
 	def closeRandomRead(self):
 		self.master.deiconify()
 		self.randomReadWindow.destroy()
-
 
 
 # some other functions
