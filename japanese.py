@@ -119,6 +119,11 @@ class LearnJap(tk.Frame):
 
 # random read feature window
 	def randomRead(self):
+		# variables
+		self.answerLabelsList = []
+		self.charsAns = []
+
+		# create the window
 		self.master.withdraw()
 
 		self.randomReadWindow = tk.Toplevel()
@@ -126,6 +131,7 @@ class LearnJap(tk.Frame):
 		self.randomReadWindow.protocol('WM_DELETE_WINDOW', self.closeRandomRead)
 		self.randomReadWindow.geometry('600x600+300+300')
 
+		# create menu check box frame
 		chooseModeFrame = tk.Frame(self.randomReadWindow, borderwidth=1, bg="red")
 		chooseModeFrame.pack(side=TOP, pady=20)
 
@@ -139,7 +145,7 @@ class LearnJap(tk.Frame):
 		pingCheckButton.pack(side=LEFT, padx=5)
 
 		# display random choosen frame
-		displayFrame = tk.Frame(self.randomReadWindow, borderwidth=1, bg="blue")
+		displayFrame = tk.Frame(self.randomReadWindow, borderwidth=1, bg="blue", height=1)
 		displayFrame.pack(side=TOP, pady=20)
 
 		# submit button
@@ -147,13 +153,24 @@ class LearnJap(tk.Frame):
 				command=lambda : self.dispRandomChars(displayFrame, [pianCheck.get(), pingCheck.get()]))
 		generateButton.pack(side=RIGHT, padx=10)
 
+		# show answer button
+		showAnsButton = tk.Button(self.randomReadWindow, text="Generate", 
+				command=lambda : self.showAnswers(self.answerLabelsList, self.charsAns))
+		showAnsButton.pack(side=BOTTOM, pady=10)
 
+
+
+	def showAnswers(self, labels, anses):
+		for label, ans in zip(labels, anses):
+			label.config(text=ans)
 
 	def dispRandomChars(self, frame, checkChoices):
 		if not any(checkChoices):
 			return
 
 		# clear the frame
+		self.answerLabelsList = []
+		self.charsAns = []
 		for child in frame.winfo_children():
 			child.destroy()
 		
@@ -161,29 +178,27 @@ class LearnJap(tk.Frame):
 		dataDic = self.dataDict
 		rowFramesList = []
 		charLabelsList = []
-		answerLabelsList = []
 		for _ in range(5):
 			# row frame to contain a charlabel and a answer label
-			rowFrame = tk.Frame(frame, borderwidth=1, bg="yellow")
+			rowFrame = tk.Frame(frame, borderwidth=1, bg="yellow", width=20)
 			rowFrame.pack(fill=X, expand=1)
 			rowFramesList.append(rowFrame)
 
 			# generate char label
-			charLabel = tk.Label(rowFrame, text="", borderwidth=2)
+			charLabel = tk.Label(rowFrame, text="", borderwidth=2, font=(None,36), width=10)
 			charLabel.pack(side=LEFT, padx=10)
 			charLabelsList.append(charLabel)
 
 			# generate answer label
-			answerLabel = tk.Label(rowFrame, text="", borderwidth=2)
+			answerLabel = tk.Label(rowFrame, text="", borderwidth=2, font=(None,20), width=15)
 			answerLabel.pack(side=LEFT, padx=10)
-			answerLabelsList.append(answerLabel)
+			self.answerLabelsList.append(answerLabel)
 
 			# get the random characters and config the text
 			chars, ans = self.randomGenerateChar(checkChoices)
 			charLabel.config(text=chars)
-			answerLabel.config(text=ans)
-
-
+			answerLabel.config(text=" "*len(ans))
+			self.charsAns.append(ans)
 
 	def randomGenerateChar(self, checkChoices, n=5):
 		print("checkChoices: ", checkChoices)
