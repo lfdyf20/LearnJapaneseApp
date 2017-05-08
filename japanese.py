@@ -3,7 +3,7 @@
 import tkinter as tk
 from tkinter import *
 import random
-from tkinter.ttk import * 
+from tkinter.ttk import *
 
 class LearnJap(tk.Frame):
 	def __init__(self, master=None):
