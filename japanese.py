@@ -120,8 +120,10 @@ class LearnJap(tk.Frame):
 # random read feature window
 	def randomRead(self):
 		# variables
-		self.answerLabelsList = []
+		answerLabelsList = []
 		self.charsAns = []
+		rowFramesList = []
+		charLabelsList = []
 
 		# create the window
 		self.master.withdraw()
@@ -150,37 +152,12 @@ class LearnJap(tk.Frame):
 
 		# submit button
 		generateButton = tk.Button(chooseModeFrame, text="Generate", 
-				command=lambda : self.dispRandomChars(displayFrame, [pianCheck.get(), pingCheck.get()]))
+				command=lambda : self.dispRandomChars(charLabelsList, answerLabelsList, [pianCheck.get(), pingCheck.get()]))
 		generateButton.pack(side=RIGHT, padx=10)
 
-		# show answer button
-		showAnsButton = tk.Button(self.randomReadWindow, text="Generate", 
-				command=lambda : self.showAnswers(self.answerLabelsList, self.charsAns))
-		showAnsButton.pack(side=BOTTOM, pady=10)
-
-
-
-	def showAnswers(self, labels, anses):
-		for label, ans in zip(labels, anses):
-			label.config(text=ans)
-
-	def dispRandomChars(self, frame, checkChoices):
-		if not any(checkChoices):
-			return
-
-		# clear the frame
-		self.answerLabelsList = []
-		self.charsAns = []
-		for child in frame.winfo_children():
-			child.destroy()
-		
-		proList = self.proList
-		dataDic = self.dataDict
-		rowFramesList = []
-		charLabelsList = []
 		for _ in range(5):
 			# row frame to contain a charlabel and a answer label
-			rowFrame = tk.Frame(frame, borderwidth=1, bg="yellow", width=20)
+			rowFrame = tk.Frame(displayFrame, borderwidth=1, bg="yellow", width=20)
 			rowFrame.pack(fill=X, expand=1)
 			rowFramesList.append(rowFrame)
 
@@ -192,13 +169,35 @@ class LearnJap(tk.Frame):
 			# generate answer label
 			answerLabel = tk.Label(rowFrame, text="", borderwidth=2, font=(None,20), width=15)
 			answerLabel.pack(side=LEFT, padx=10)
-			self.answerLabelsList.append(answerLabel)
+			answerLabelsList.append(answerLabel)
 
+
+		# show answer button
+		showAnsButton = tk.Button(self.randomReadWindow, text="Generate", 
+				command=lambda : self.showAnswers(answerLabelsList, self.charsAns))
+		showAnsButton.pack(pady=10)
+
+
+
+	def showAnswers(self, labels, anses):
+		for label, ans in zip(labels, anses):
+			label.config(text=ans)
+
+	def dispRandomChars(self, labels, answers, checkChoices):
+		if not any(checkChoices):
+			return
+
+		self.charsAns = []
+
+		# add text to labels
+		for label in labels:
 			# get the random characters and config the text
 			chars, ans = self.randomGenerateChar(checkChoices)
-			charLabel.config(text=chars)
-			answerLabel.config(text=" "*len(ans))
+			label.config(text=chars)
 			self.charsAns.append(ans)
+		for ansLabel in answers:
+			ansLabel.config(text="")
+
 
 	def randomGenerateChar(self, checkChoices, n=5):
 		print("checkChoices: ", checkChoices)
