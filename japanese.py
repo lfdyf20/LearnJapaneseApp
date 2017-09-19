@@ -1,7 +1,7 @@
 # coding: utf-8
 
 """
-First time I made a app to help myself.
+First time I made an app to help myself.
 """
 
 import tkinter as tk
