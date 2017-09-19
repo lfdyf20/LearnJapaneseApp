@@ -1,5 +1,9 @@
 # coding: utf-8
 
+"""
+First time I made a app to help myself.
+"""
+
 import tkinter as tk
 from tkinter import *
 import random
